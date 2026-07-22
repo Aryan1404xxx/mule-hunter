@@ -10,117 +10,42 @@ st.set_page_config(page_title="Mule Hunter", page_icon="🎯", layout="wide")
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-
+html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 .stApp {
     background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e, #16213e, #0f3460);
     background-size: 400% 400%;
     animation: gradientShift 12s ease infinite;
 }
-
 @keyframes gradientShift {
     0%   { background-position: 0% 50%; }
     50%  { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
-
 .big-title {
-    font-size: 3rem;
-    font-weight: 800;
+    font-size: 3rem; font-weight: 800;
     background: linear-gradient(90deg, #ff416c, #ff4b2b, #f7971e, #ffd200);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0;
 }
-
-.subtitle {
-    font-size: 1rem;
-    color: #aaa;
-    margin-bottom: 2rem;
-}
-
-.glass-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-    margin-bottom: 1rem;
-}
-
-.metric-card {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    text-align: center;
-}
-
+.subtitle { font-size: 1rem; color: #aaa; margin-bottom: 2rem; }
 section[data-testid="stSidebar"] {
     background: rgba(15, 12, 41, 0.85);
     border-right: 1px solid rgba(255,255,255,0.1);
 }
-
 .stButton > button {
     background: linear-gradient(90deg, #ff416c, #ff4b2b);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    padding: 0.5rem 2rem;
-    transition: transform 0.2s;
+    color: white; border: none; border-radius: 8px;
+    font-weight: 600; padding: 0.5rem 2rem;
 }
-
-.stButton > button:hover {
-    transform: scale(1.03);
-    color: white;
-}
-
-.stDataFrame { border-radius: 12px; }
-
-div[data-testid="stMetricValue"] {
-    color: white !important;
-    font-size: 1.8rem !important;
-    font-weight: 700 !important;
-}
-
-div[data-testid="stMetricLabel"] {
-    color: #aaa !important;
-}
-
-.stTabs [data-baseweb="tab"] {
-    color: #aaa;
-    font-weight: 600;
-}
-
-.stTabs [aria-selected="true"] {
-    color: #ff416c !important;
-    border-bottom: 2px solid #ff416c;
-}
-
-h1, h2, h3, h4, p, label, .stMarkdown {
-    color: white !important;
-}
-
-.stSelectbox label, .stSlider label, .stNumberInput label {
-    color: #ccc !important;
-}
-
+div[data-testid="stMetricValue"] { color: white !important; font-size: 1.8rem !important; font-weight: 700 !important; }
+div[data-testid="stMetricLabel"] { color: #aaa !important; }
+.stTabs [aria-selected="true"] { color: #ff416c !important; border-bottom: 2px solid #ff416c; }
+h1, h2, h3, h4, p, label, .stMarkdown { color: white !important; }
 .rank-badge {
     display: inline-block;
     background: linear-gradient(90deg, #ff416c, #ff4b2b);
-    color: white;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    text-align: center;
-    line-height: 28px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    margin-right: 8px;
+    color: white; border-radius: 50%; width: 28px; height: 28px;
+    text-align: center; line-height: 28px; font-weight: 700;
+    font-size: 0.85rem; margin-right: 8px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -140,8 +65,8 @@ st.markdown('<p class="subtitle">AI-powered mule account detection — upload tr
 
 with st.sidebar:
     st.markdown("## ⚙️ Hunter Settings")
-    high_threshold = st.slider("🔴 High Risk threshold (%)", 50, 90, 60)
-    med_threshold = st.slider("🟡 Medium Risk threshold (%)", 20, 50, 30)
+    high_threshold = st.slider("🔴 High Risk threshold (%)", 20, 90, 40)
+    med_threshold  = st.slider("🟡 Medium Risk threshold (%)", 10, 50, 25)
     min_transactions = st.number_input("Min transactions per account", 1, 20, 1)
     st.markdown("---")
     st.markdown("**🤖 Model Info**")
@@ -150,62 +75,95 @@ with st.sidebar:
     st.markdown("Trained on: `590,540 transactions`")
     st.markdown("---")
     st.markdown("**Developed by:** Aryan Sinha")
-    st.markdown("**SBI Internship, Patna**")
 
-uploaded_file = st.file_uploader(
-    "📂 Upload transaction CSV",
-    type=["csv"],
-    help="Upload a CSV with transaction data."
-)
+uploaded_file = st.file_uploader("📂 Upload transaction CSV", type=["csv"])
+
+INDIAN_COL_MAP = {
+    "Transaction_Amount":   "TransactionAmt",
+    "Account_Age_Months":   "card2",
+    "Daily_Transactions":   "C1",
+    "Total_Credit":         "D1",
+    "Total_Debit":          "D2",
+    "Avg_Transaction":      "D15",
+    "Unique_Beneficiaries": "C13",
+}
+TRANSACTION_TYPE_MAP = {"UPI": 0, "IMPS": 1, "NEFT": 2, "RTGS": 3, "SWIFT": 4}
+DEVICE_MAP = {"Mobile": 0, "Laptop": 1, "Desktop": 2, "Tablet": 3}
+CAT_MAP = {
+    "ProductCD":     ["W","H","C","S","R"],
+    "card4":         ["visa","mastercard","american express","discover"],
+    "card6":         ["credit","debit","debit or credit","charge card"],
+    "P_emaildomain": ["gmail.com","yahoo.com","hotmail.com","anonymous.com","protonmail.com"],
+    "R_emaildomain": ["gmail.com","yahoo.com","hotmail.com","anonymous.com","protonmail.com"],
+}
 
 if uploaded_file is None:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown("### 📋 Expected CSV Format")
-    sample = pd.DataFrame({
-        "AccountID": ["ACC001", "ACC001", "ACC002", "ACC003"],
-        "TransactionAmt": [15000, 23000, 500, 87000],
-        "ProductCD": ["W", "W", "H", "C"],
-        "card4": ["visa", "visa", "mastercard", "visa"],
-        "card6": ["credit", "credit", "debit", "credit"],
-        "addr1": [299, 299, 150, 400],
-        "dist1": [500, 600, 10, 1200],
-        "P_emaildomain": ["anonymous.com", "protonmail.com", "gmail.com", "anonymous.com"],
-    })
-    st.dataframe(sample, use_container_width=True)
-    st.caption("AccountID groups transactions per account. Other columns feed the AI model.")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.info("👆 Upload a CSV file to start hunting mule accounts")
+    st.markdown("### 📋 Supported Formats")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**IEEE-CIS Format**")
+        sample1 = pd.DataFrame({
+            "AccountID":     ["ACC001", "ACC002"],
+            "TransactionAmt":[15000, 500],
+            "ProductCD":     ["W", "H"],
+            "card4":         ["visa", "mastercard"],
+            "P_emaildomain": ["anonymous.com", "gmail.com"],
+        })
+        st.dataframe(sample1, use_container_width=True)
+    with col2:
+        st.markdown("**Indian Banking Format**")
+        sample2 = pd.DataFrame({
+            "Account_ID":           ["ACC001", "ACC002"],
+            "Transaction_Amount":   [85000, 1800],
+            "Transaction_Type":     ["IMPS", "UPI"],
+            "Daily_Transactions":   [19, 2],
+            "Unique_Beneficiaries": [18, 1],
+        })
+        st.dataframe(sample2, use_container_width=True)
 
 else:
     df = pd.read_csv(uploaded_file)
-    st.success(f"✅ Loaded {len(df):,} transactions")
 
-    if "AccountID" not in df.columns:
-        st.warning("⚠️ No 'AccountID' column found — treating each row as a separate account")
+    if "Account_ID" in df.columns and "AccountID" not in df.columns:
+        df["AccountID"] = df["Account_ID"]
+    elif "AccountID" not in df.columns:
+        st.warning("⚠️ No AccountID column found — treating each row as a separate account")
         df["AccountID"] = [f"TXN_{i:05d}" for i in range(len(df))]
 
-    with st.spinner("🔍 Hunting mule accounts..."):
-        cat_map = {
-            "ProductCD": ["W","H","C","S","R"],
-            "card4": ["visa","mastercard","american express","discover"],
-            "card6": ["credit","debit","debit or credit","charge card"],
-            "P_emaildomain": ["gmail.com","yahoo.com","hotmail.com","anonymous.com","protonmail.com"],
-            "R_emaildomain": ["gmail.com","yahoo.com","hotmail.com","anonymous.com","protonmail.com"],
-        }
+    st.success(f"✅ Loaded {len(df):,} transactions")
 
-        input_data = pd.DataFrame(np.full((len(df), len(feature_names)), -999.0), columns=feature_names)
-        for col in df.columns:
+    with st.spinner("🔍 Hunting mule accounts..."):
+        is_indian = "Transaction_Amount" in df.columns
+
+        if is_indian:
+            st.info("📌 Indian transaction format detected — mapping columns to model features")
+            df_mapped = df.copy()
+            for indian_col, ieee_col in INDIAN_COL_MAP.items():
+                if indian_col in df_mapped.columns:
+                    df_mapped[ieee_col] = pd.to_numeric(df_mapped[indian_col], errors="coerce").fillna(-999)
+            if "Transaction_Type" in df_mapped.columns:
+                df_mapped["ProductCD"] = df_mapped["Transaction_Type"].map(TRANSACTION_TYPE_MAP).fillna(-999)
+            if "Device_Type" in df_mapped.columns:
+                df_mapped["card4"] = df_mapped["Device_Type"].map(DEVICE_MAP).fillna(-999)
+            if "Location" in df_mapped.columns:
+                df_mapped["addr1"] = pd.Categorical(df_mapped["Location"]).codes
+        else:
+            df_mapped = df.copy()
+
+        input_data = pd.DataFrame(np.full((len(df_mapped), len(feature_names)), -999.0), columns=feature_names)
+        for col in df_mapped.columns:
             if col in feature_names:
-                input_data[col] = pd.to_numeric(df[col], errors="coerce").fillna(-999).values
-            elif col in cat_map and col in feature_names:
-                input_data[col] = df[col].apply(lambda x: cat_map[col].index(x) if x in cat_map[col] else -999)
+                input_data[col] = pd.to_numeric(df_mapped[col], errors="coerce").fillna(-999).values
+            elif col in CAT_MAP and col in feature_names:
+                input_data[col] = df_mapped[col].apply(
+                    lambda x: CAT_MAP[col].index(x) if x in CAT_MAP[col] else -999
+                )
 
         probs = model.predict_proba(input_data)[:, 1]
         df["fraud_prob"] = probs
-        df["fraud_pct"] = (probs * 100).round(2)
+        df["fraud_pct"]  = (probs * 100).round(2)
 
-    agg_dict = {
-        "fraud_prob": ["count", "mean", "max"],
-    }
     account_stats = df.groupby("AccountID").agg(
         total_transactions=("fraud_prob", "count"),
         avg_risk=("fraud_pct", "mean"),
@@ -213,12 +171,14 @@ else:
         high_risk_txns=("fraud_prob", lambda x: (x > high_threshold/100).sum())
     ).reset_index()
 
-    if "TransactionAmt" in df.columns:
-        amt_stats = df.groupby("AccountID")["TransactionAmt"].sum().reset_index()
-        amt_stats.columns = ["AccountID", "total_amount"]
-        account_stats = account_stats.merge(amt_stats, on="AccountID", how="left")
-    else:
-        account_stats["total_amount"] = 0
+    if "Transaction_Amount" in df.columns:
+        amt = df.groupby("AccountID")["Transaction_Amount"].sum().reset_index()
+        amt.columns = ["AccountID", "total_amount"]
+        account_stats = account_stats.merge(amt, on="AccountID", how="left")
+    elif "TransactionAmt" in df.columns:
+        amt = df.groupby("AccountID")["TransactionAmt"].sum().reset_index()
+        amt.columns = ["AccountID", "total_amount"]
+        account_stats = account_stats.merge(amt, on="AccountID", how="left")
 
     account_stats["avg_risk"] = account_stats["avg_risk"].round(2)
     account_stats["max_risk"] = account_stats["max_risk"].round(2)
@@ -261,28 +221,27 @@ else:
     with col_right:
         st.markdown("### 📊 Risk Distribution")
         pie_data = pd.DataFrame({
-            "Risk": ["High Risk", "Medium Risk", "Low Risk"],
+            "Risk":  ["High Risk", "Medium Risk", "Low Risk"],
             "Count": [high_risk, med_risk, low_risk]
         })
         fig_pie = px.pie(
-            pie_data, values="Count", names="Risk",
-            color="Risk",
-            color_discrete_map={"High Risk": "#ff416c", "Medium Risk": "#f7971e", "Low Risk": "#2ecc71"},
+            pie_data, values="Count", names="Risk", color="Risk",
+            color_discrete_map={"High Risk":"#ff416c","Medium Risk":"#f7971e","Low Risk":"#2ecc71"},
             hole=0.45
         )
         fig_pie.update_layout(
-            height=280,
-            margin=dict(t=0, b=0),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font_color="white",
-            legend_font_color="white"
+            height=280, margin=dict(t=0,b=0),
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            font_color="white", legend_font_color="white"
         )
         st.plotly_chart(fig_pie, use_container_width=True)
 
         st.markdown("### 🏆 Top 5 Most Suspicious")
         for i, row in account_stats.head(5).iterrows():
-            st.markdown(f'<span class="rank-badge">{i}</span> **{row["AccountID"]}** — `{row["avg_risk"]}%` {row["Risk Level"]}', unsafe_allow_html=True)
+            st.markdown(
+                f'<span class="rank-badge">{i}</span> **{row["AccountID"]}** — `{row["avg_risk"]}%` {row["Risk Level"]}',
+                unsafe_allow_html=True
+            )
 
     st.markdown("---")
     st.markdown("### 🔬 Drill Into an Account")
@@ -307,27 +266,54 @@ else:
             y="fraud_pct",
             title=f"Transaction Risk Scores — {selected_account}",
             color="fraud_pct",
-            color_continuous_scale=["#2ecc71", "#f7971e", "#ff416c"],
-            labels={"fraud_pct": "Fraud Risk %", "index": "Transaction #"}
+            color_continuous_scale=["#2ecc71","#f7971e","#ff416c"],
+            labels={"fraud_pct":"Fraud Risk %","index":"Transaction #"}
         )
         fig_bar.add_hline(y=high_threshold, line_dash="dash", line_color="#ff416c", annotation_text="High Risk")
-        fig_bar.add_hline(y=med_threshold, line_dash="dash", line_color="#f7971e", annotation_text="Medium Risk")
+        fig_bar.add_hline(y=med_threshold,  line_dash="dash", line_color="#f7971e", annotation_text="Medium Risk")
         fig_bar.update_layout(
-            height=320,
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font_color="white",
-            title_font_color="white"
+            height=320, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            font_color="white", title_font_color="white"
         )
         st.plotly_chart(fig_bar, use_container_width=True)
         st.dataframe(acct_txns.drop(columns=["fraud_prob"]).reset_index(drop=True), use_container_width=True)
 
     st.markdown("---")
+
+    try:
+        fpr     = np.load("model/fpr.npy")
+        tpr     = np.load("model/tpr.npy")
+        roc_auc = np.load("model/roc_auc.npy")[0]
+        st.markdown("### 📈 Model Performance — ROC Curve")
+        fig_roc = go.Figure()
+        fig_roc.add_trace(go.Scatter(
+            x=fpr, y=tpr, mode='lines',
+            name=f'XGBoost (AUC = {roc_auc:.4f})',
+            line=dict(color='#ff416c', width=3)
+        ))
+        fig_roc.add_trace(go.Scatter(
+            x=[0,1], y=[0,1], mode='lines',
+            name='Random Classifier',
+            line=dict(color='gray', width=2, dash='dash')
+        ))
+        fig_roc.update_layout(
+            title='ROC Curve — Mule Account Detection Model',
+            xaxis_title='False Positive Rate',
+            yaxis_title='True Positive Rate',
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+            font_color='white', legend=dict(bgcolor='rgba(0,0,0,0)'), height=450
+        )
+        fig_roc.add_annotation(
+            x=0.6, y=0.15, text=f"AUC = {roc_auc:.4f}",
+            font=dict(size=18, color='#ff416c'), showarrow=False
+        )
+        st.plotly_chart(fig_roc, use_container_width=True)
+        st.caption("AUC of 0.94 means the model correctly distinguishes fraud from non-fraud 94% of the time")
+    except FileNotFoundError:
+        pass
+
     csv_out = account_stats.to_csv(index=False)
     st.download_button(
         "📥 Download Full Flagged Report",
-        csv_out,
-        "mule_hunter_report.csv",
-        "text/csv",
-        type="primary"
+        csv_out, "mule_hunter_report.csv", "text/csv", type="primary"
     )
